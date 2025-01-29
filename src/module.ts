@@ -6,13 +6,13 @@ import {
 import { addCustomTab } from '@nuxt/devtools-kit'
 import { defu } from 'defu'
 
-import type { ModuleOptions } from './runtime/types/nuxtMeilisearch.js'
+import type { ModuleOptions } from './types'
 
-enum InstantSearchThemes {
-  reset,
-  algolia,
-  satellite,
-}
+const InstantSearchThemes = {
+  reset: 'reset',
+  algolia: 'algolia',
+  satellite: 'satellite',
+} as const
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -28,31 +28,35 @@ export default defineNuxtModule<ModuleOptions>({
     serverSideUsage: false,
     adminApiKey: '',
     instantSearch: false,
-
   },
   setup(options, nuxt) {
     if (!options.hostUrl)
-
       console.warn('`[nuxt-meilisearch]` Missing hostUrl`')
 
     if (!options.searchApiKey)
-
       console.warn('`[nuxt-meilisearch]` Missing `searchApiKey`')
 
-    nuxt.options.runtimeConfig.public.meilisearchClient = defu(nuxt.options.runtimeConfig.public.meilisearchClient, {
+    const publicConfig = {
       hostUrl: options.hostUrl,
       searchApiKey: options.searchApiKey,
-      serverSideUsage: options.serverSideUsage,
-      instantSearch: options.instantSearch,
-    })
+      serverSideUsage: options.serverSideUsage ?? false,
+      instantSearch: options.instantSearch ?? false,
+    } satisfies ModuleOptions
 
-    nuxt.options.runtimeConfig.serverMeilisearchClient = defu(nuxt.options.runtimeConfig.serverMeilisearchClient, {
-      hostUrl: options.hostUrl,
-      searchApiKey: options.searchApiKey,
-      serverSideUsage: options.serverSideUsage,
-      adminApiKey: options.adminApiKey,
-      instantSearch: options.instantSearch,
-    })
+    const serverConfig = {
+      ...publicConfig,
+      adminApiKey: options.adminApiKey || '',
+    } satisfies ModuleOptions
+
+    nuxt.options.runtimeConfig.public.meilisearchClient = defu(
+      nuxt.options.runtimeConfig.public.meilisearchClient,
+      publicConfig
+    )
+
+    nuxt.options.runtimeConfig.serverMeilisearchClient = defu(
+      nuxt.options.runtimeConfig.serverMeilisearchClient,
+      serverConfig
+    )
 
     const resolver = createResolver(import.meta.url)
 
@@ -61,9 +65,8 @@ export default defineNuxtModule<ModuleOptions>({
 
       if (typeof options.instantSearch === 'object') {
         const { theme } = options.instantSearch
-        if (theme) {
-          if (theme in InstantSearchThemes)
-            nuxt.options.css.push(`instantsearch.css/themes/${theme}.css`)
+        if (theme && theme in InstantSearchThemes) {
+          nuxt.options.css.push(`instantsearch.css/themes/${theme}.css`)
         }
       }
     }
@@ -72,7 +75,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.serverSideUsage) {
       if (!options.adminApiKey)
-
         console.warn('`[nuxt-meilisearch]` Missing `adminApiKey`')
 
       nuxt.hook('nitro:config', (config) => {
@@ -108,5 +110,4 @@ export default defineNuxtModule<ModuleOptions>({
       },
     })
   },
-
 })

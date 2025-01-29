@@ -1,9 +1,17 @@
 import { MeiliSearch } from 'meilisearch'
 import { useRuntimeConfig } from '#imports'
 
-const { serverMeilisearchClient: { hostUrl, adminApiKey } } = useRuntimeConfig()
+let meilisearchInstance: MeiliSearch | null = null
 
-export const $meilisearch = new MeiliSearch({
-  host: hostUrl,
-  apiKey: adminApiKey,
-})
+export function getMeilisearchInstance() {
+  if (!meilisearchInstance) {
+    const { serverMeilisearchClient: { hostUrl, adminApiKey } } = useRuntimeConfig()
+    meilisearchInstance = new MeiliSearch({
+      host: hostUrl,
+      apiKey: adminApiKey,
+    })
+  }
+  return meilisearchInstance
+}
+
+export const $meilisearch = getMeilisearchInstance()
