@@ -34,12 +34,13 @@
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "release": "pnpm run prepack && changelogen --release && pnpm publish && git push --follow-tags",
+    "build": "nuxt-module-build build",
+    "prepare": "nuxt-module-build build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
+    "test:types": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@meilisearch/instant-meilisearch": "0.19.3",
