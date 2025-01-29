@@ -85,7 +85,7 @@ export default defineNuxtModule<ModuleOptions>({
           presets: [
             {
               from: resolver.resolve('./runtime/server/utils/meilisearch'),
-              imports: ['$meilisearch'],
+              imports: ['useMeilisearch', '$meilisearch'],
             },
           ],
         })

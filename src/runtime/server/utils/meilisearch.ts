@@ -14,4 +14,10 @@ export function getMeilisearchInstance() {
   return meilisearchInstance
 }
 
-export const $meilisearch = getMeilisearchInstance()
+// Export a function instead of the instance directly
+export function useMeilisearch() {
+  return getMeilisearchInstance()
+}
+
+// For backward compatibility, but users should migrate to useMeilisearch()
+export const $meilisearch = getMeilisearchInstance
