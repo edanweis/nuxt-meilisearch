@@ -5,7 +5,6 @@ import {
 } from '@nuxt/kit'
 import { addCustomTab } from '@nuxt/devtools-kit'
 import { defu } from 'defu'
-
 import type { ModuleOptions } from './types'
 
 const InstantSearchThemes = {
