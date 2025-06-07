@@ -1,15 +1,20 @@
 import { MeiliSearch } from 'meilisearch'
-import { useRuntimeConfig } from '#imports'
 
 let meilisearchInstance: MeiliSearch | null = null
 
+function createMeilisearchInstance() {
+  // Import useRuntimeConfig only when needed
+  const { useRuntimeConfig } = require('#imports')
+  const { serverMeilisearchClient: { hostUrl, adminApiKey } } = useRuntimeConfig()
+  return new MeiliSearch({
+    host: hostUrl,
+    apiKey: adminApiKey,
+  })
+}
+
 export function getMeilisearchInstance() {
   if (!meilisearchInstance) {
-    const { serverMeilisearchClient: { hostUrl, adminApiKey } } = useRuntimeConfig()
-    meilisearchInstance = new MeiliSearch({
-      host: hostUrl,
-      apiKey: adminApiKey,
-    })
+    meilisearchInstance = createMeilisearchInstance()
   }
   return meilisearchInstance
 }
@@ -20,4 +25,6 @@ export function useMeilisearch() {
 }
 
 // For backward compatibility, but users should migrate to useMeilisearch()
-export const $meilisearch = getMeilisearchInstance
+export function $meilisearch() {
+  return getMeilisearchInstance()
+}
